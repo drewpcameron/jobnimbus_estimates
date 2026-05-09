@@ -129,6 +129,13 @@ st.markdown("""
     .stTextInput > div > div > input::placeholder {
         color: #b0b0b0;
     }
+    .stTextInput > div > div > input:disabled {
+        color: #000000 !important;
+        -webkit-text-fill-color: #000000 !important;
+    }
+    .stTextInput label {
+        color: #ffffff !important;
+    }
 
     /* Slide-in animations */
     @keyframes slideFromCenter {
@@ -180,6 +187,8 @@ if "stage" not in st.session_state:
     st.session_state.street_b64    = None
     st.session_state.measurements  = None
     st.session_state.est           = None
+    st.session_state.jn_saved        = False
+    st.session_state.jn_contact_name = ""
 
 
 def _fetch_street_view_b64(lat, lng, api_key):
@@ -197,6 +206,40 @@ def _fetch_street_view_b64(lat, lng, api_key):
 
 
 import base64
+
+
+# ── JobNimbus save modal ───────────────────────────────────────────────────────
+@st.dialog("Save to JobNimbus")
+def jn_save_dialog(address: str, total: float):
+    first = st.text_input("Client First Name *")
+    last  = st.text_input("Client Last Name *")
+
+    col_e, col_p = st.columns(2)
+    with col_e:
+        email = st.text_input("Client Email")
+    with col_p:
+        phone = st.text_input("Client Phone Number")
+
+    addr_col, total_col = st.columns([2, 1])
+    with addr_col:
+        st.text_input("Property Address", value=address, disabled=True)
+    with total_col:
+        st.text_input("Estimate Total", value=f"${total:,.2f}", disabled=True)
+
+    st.markdown("<div style='margin-top:4px;'></div>", unsafe_allow_html=True)
+    btn_col, cancel_col = st.columns([2, 1])
+    with btn_col:
+        if st.button("Save to JobNimbus", type="primary", use_container_width=True):
+            if not first.strip() or not last.strip():
+                st.error("First and last name are required.")
+            else:
+                st.session_state.jn_saved        = True
+                st.session_state.jn_contact_name = f"{first.strip()} {last.strip()}"
+                st.rerun()
+    with cancel_col:
+        if st.button("Cancel", use_container_width=True):
+            st.rerun()
+
 
 # ── Stage: input — centered ───────────────────────────────────────────────────
 if st.session_state.stage == "input":
@@ -319,6 +362,22 @@ elif st.session_state.stage == "results":
             </div>
         </div>
         """, unsafe_allow_html=True)
+
+        if st.session_state.jn_saved:
+            name = st.session_state.get("jn_contact_name", "")
+            st.markdown(f"""
+            <div style="display:inline-flex; align-items:center; gap:8px;
+                        background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.4);
+                        border-radius:6px; padding:8px 16px; margin-top:4px;">
+                <span style="font-size:1.1rem;">✓</span>
+                <span style="color:#ffffff; font-weight:600; font-size:0.9rem;">
+                    Saved to JobNimbus{f' · {name}' if name else ''}
+                </span>
+            </div>
+            """, unsafe_allow_html=True)
+        else:
+            if st.button("Save to JobNimbus", key="jn_save"):
+                jn_save_dialog(st.session_state.address, est["total"])
     with hdr_right:
         if st.session_state.street_b64:
             st.markdown('<div class="shrink-in">', unsafe_allow_html=True)
@@ -467,7 +526,9 @@ elif st.session_state.stage == "results":
 
     st.markdown("<div style='margin-top:24px;'></div>", unsafe_allow_html=True)
     if st.button("Start Over"):
-        st.session_state.stage = "input"
+        st.session_state.stage            = "input"
+        st.session_state.jn_saved         = False
+        st.session_state.jn_contact_name  = ""
         st.rerun()
 
 
