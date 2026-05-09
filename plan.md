@@ -70,15 +70,31 @@ Line items to generate:
 ## Step 4 — Build the UI (3 hours)
 File: `app.py` — Streamlit app
 
-Screen 1 — Input:
-- Address text field
-- "Get Estimate" button
+### Stage machine
+Use `st.session_state` to track 4 stages: `"input"` → `"confirm"` → `"analyzing"` → `"results"`.
+Each stage renders a different screen; Streamlit re-runs on every interaction so all logic is driven by state.
 
-Screen 2 — Output:
-- Roof summary card (total sqft, squares, dominant pitch, segment count)
-- Line-item estimate table
-- Total cost
-- "Export to PDF" button (stretch goal)
+### Stage 1 — Address Entry
+- Address text field + "Get Estimate" button
+- On submit: geocode address (already works), advance to `"confirm"`
+
+### Stage 2 — Street View Confirmation
+- Enable **Google Street View Static API** in Google Cloud Console (same key)
+- Fetch Street View JPEG using lat/lng from geocoder
+- Display image with "Is this your property?" prompt + Yes / No buttons
+- Yes → kick off Solar API call immediately, store result in `session_state`, advance to `"analyzing"`
+
+### Stage 3 — Animation (via `st.components.v1.html()`)
+Three CSS animations chained in sequence inside a single HTML block:
+1. **Crossfade** — Street View JPEG fades to Maps Static satellite JPEG (enable **Google Maps Static API**, same key)
+2. **Perspective flatten** — satellite image animates from `rotateX(45deg)` to `rotateX(0)` using CSS `transform: perspective()`
+3. **Scan line** — semi-transparent `div` sweeps top-to-bottom over the flattened roof image via `@keyframes`
+
+Total animation runtime ~3–4 seconds. Solar API call (~0.7s) is already done by the time animation ends — result is pulled from `session_state` and displayed immediately after.
+
+### Stage 4 — Results
+- Fade/slide in existing estimate output (roof summary cards + line-item table + total)
+- "Start Over" button resets session state to `"input"`
 
 Run locally with: `streamlit run app.py`
 
@@ -102,6 +118,11 @@ Record the total sqft for each — these go directly into the submission form.
 - Write README.md (what it does, how to run it, tech stack)
 - Make repo public
 - Add output screenshots or JSON for each test property
+
+---
+
+## Nice to Haves
+- **Address autocomplete** — Enable Google Places Autocomplete API (same key), implement via `st.components.v1.html()` with the Places JS SDK. Suggestions appear as user types; selected address is passed back to `st.session_state` via postMessage. ~20–30 min.
 
 ---
 

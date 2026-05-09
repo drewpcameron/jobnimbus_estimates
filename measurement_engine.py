@@ -64,6 +64,46 @@ def waste_factor(tier: str) -> float:
     return {"simple": 0.10, "moderate": 0.12, "complex": 0.15}[tier]
 
 
+def measure_from_coords(lat: float, lng: float, address: str) -> dict:
+    """Run Solar API + measurement pipeline when lat/lng are already known."""
+    data     = get_solar_data(lat, lng)
+    solar    = data["solarPotential"]
+    segments = solar["roofSegmentStats"]
+    total_m2 = solar["wholeRoofStats"]["areaMeters2"]
+
+    total_sqft   = total_m2 * 10.764
+    dom_pitch    = dominant_pitch(segments)
+    tier         = complexity_tier(len(segments))
+    waste        = waste_factor(tier)
+    squares_net  = total_sqft / 100
+    squares_with_waste = squares_net * (1 + waste)
+
+    seg_details = [
+        {
+            "pitch_degrees": s.get("pitchDegrees", 0),
+            "pitch_rise":    pitch_to_rise(s.get("pitchDegrees", 0)),
+            "area_sqft":     (s.get("stats", {}).get("areaMeters2", 0)) * 10.764,
+            "azimuth":       s.get("azimuthDegrees", 0),
+        }
+        for s in segments
+    ]
+
+    return {
+        "address":             address,
+        "lat":                 lat,
+        "lng":                 lng,
+        "total_sqft":          round(total_sqft),
+        "total_squares":       round(squares_net, 2),
+        "squares_with_waste":  round(squares_with_waste, 2),
+        "dominant_pitch_deg":  round(dom_pitch, 1),
+        "dominant_pitch_rise": pitch_to_rise(dom_pitch),
+        "segment_count":       len(segments),
+        "complexity":          tier,
+        "waste_factor":        waste,
+        "segments":            seg_details,
+    }
+
+
 def measure(address: str) -> dict:
     """
     Main entry point. Returns a measurement dict for the given address.
