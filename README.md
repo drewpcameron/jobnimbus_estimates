@@ -45,9 +45,9 @@ The Google API key needs the following APIs enabled: Solar API, Places API, Geoc
 
 Measurements are sourced directly from the **Google Solar API** — the same satellite and aerial imagery pipeline used by Google's Project Sunroof, which has processed over 320 million rooftops globally.
 
-All measurements are **pitch-adjusted roof area**, not building footprint. A house with a 2,000 sqft footprint and a 9/12 pitch has approximately 2,800 sqft of actual roof surface — a ~40% difference. Using footprint is a common error that causes 5–20% underestimation depending on slope; the Solar API returns true sloped area for each segment, which we sum directly.
+All measurements are **pitch-adjusted roof area**, not building footprint. The Solar API returns true sloped area for each segment, which we sum directly.
 
-Validated against both EagleView (Ref A) and Geospan (Ref B) benchmark data across all 5 reference properties:
+Application was validated against benchmark data across the 5 reference properties:
 
 | Address | Ref A (sqft) | Ref B (sqft) | Our Output (sqft) | Error vs A | Error vs B |
 |---|---|---|---|---|---|
@@ -61,7 +61,7 @@ Validated against both EagleView (Ref A) and Geospan (Ref B) benchmark data acro
 
 ### 2. Product
 
-This isn't a measurement tool with an estimate bolted on — it's a contractor workflow built around the estimate:
+A simple to use contractor workflow built around the estimate. Could simply be integrated into the Job Nimbus Mobile app.
 
 - **12 line-item estimate** with industry-standard pricing (shingles, labor, underlayment, ice & water shield, ridge cap, hip cap, valley, rake, eave drip edge, flashing, step flashing, tear-off)
 - **Pitch-adjusted labor** using a 7-tier multiplier table (1.00× flat → 1.54× 10/12+)
@@ -74,10 +74,8 @@ A roofer can walk off the truck, type an address, and hand a customer a number i
 
 ### 3. Experience
 
-- **No button required** — selecting an autocomplete suggestion immediately kicks off geocoding and advances to confirmation
+- **Simple to Use** — selecting an autocomplete suggestion immediately kicks off geocoding and advances to confirmation
 - **Street View confirmation** — contractor verifies the right house before any API calls are made
-- **Smooth stage transitions** — slide and shrink-in CSS animations between input → confirm → results
-- **Single-screen results** — the full estimate fits on one viewport with no scrolling
 - **Live deployed app** — no setup, no installs, works on any device
 
 ### 4. Craft
@@ -105,9 +103,6 @@ estimator.py            — Pitch multipliers, LF estimation, line-item builder
 
 Live at **[jobnimbus-estimates.streamlit.app](https://jobnimbus-estimates.streamlit.app)** — try it with any US address before the presentation.
 
-The Saturday demo will walk through the full contractor workflow:
-- Address autocomplete → street view confirmation → aerial measurement → editable estimate → Save to JobNimbus
-
 ---
 
 ## Test Property Results
@@ -130,7 +125,7 @@ Each full estimate — geocoding, Solar API measurement, Street View confirmatio
 
 ## Why Google Solar API
 
-Most approaches to aerial roof measurement use a vision model to interpret satellite images — which introduces hallucination risk and produces measurements that can't be audited or reproduced. The Google Solar API provides structured geometric data extracted from aerial imagery and LiDAR at the segment level: each roof plane's area, pitch, and orientation as discrete values. The result is a measurement pipeline that is deterministic, fast (~700ms), and accurate to within 2% of trusted industry reference data.
+Most approaches to aerial roof measurement use a vision model to interpret satellite images — which introduces hallucination risk and produces measurements that can't be audited or reproduced. The Google Solar API provides structured geometric data extracted from aerial imagery and LiDAR at the segment level: each roof plane's area, pitch, and orientation as discrete values. The result is a measurement pipeline that is deterministic, fast (~700ms), and accurate to within a few percentage points of trusted industry reference data.
 
 ---
 
