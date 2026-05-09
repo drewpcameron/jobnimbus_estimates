@@ -217,4 +217,7 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
+# Playwright MCP
+.playwright-mcp/
+
 __pycache__

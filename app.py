@@ -42,7 +42,7 @@ st.markdown("""
 
     /* Reduce top padding of main container */
     .block-container {
-        padding-top: 2.5rem !important;
+        padding-top: 3rem !important;
     }
 
     /* Align street view image to the right */
@@ -79,31 +79,32 @@ st.markdown("""
         color: rgba(255,255,255,0.85);
     }
 
-    /* Metric cards */
+    /* Metric cards — no border, soft lift shadow, coral accent on value */
     .jn-card {
         background: #ffffff;
-        border: 1px solid #e0e0e0;
-        border-radius: 8px;
-        padding: 16px 20px;
+        border: none;
+        border-radius: 10px;
+        padding: 20px 20px 16px;
         text-align: center;
+        box-shadow: 0 2px 14px rgba(0,0,0,0.09);
     }
     .jn-card .label {
-        font-size: 0.78rem;
-        color: #0066CC;
+        font-size: 0.72rem;
+        color: #6b7280;
         text-transform: uppercase;
-        letter-spacing: 0.05em;
-        margin-bottom: 6px;
+        letter-spacing: 0.07em;
+        font-weight: 700;
+        margin-bottom: 8px;
     }
     .jn-card .value {
-        font-size: 1.6rem;
-        font-weight: 700;
-        color: #0066CC;
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: #e63946;
     }
     .jn-card .sub {
-        font-size: 0.82rem;
-        color: #0066CC;
-        opacity: 0.65;
-        margin-top: 2px;
+        font-size: 0.8rem;
+        color: #9ca3af;
+        margin-top: 4px;
     }
 
     /* Section headers */
@@ -167,6 +168,29 @@ st.markdown("""
         animation: slideFromRight 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
     }
 
+    /* Strip iframe default border and clip to pill shape */
+    iframe[data-testid="stCustomComponentV1"] {
+        border: none !important;
+        border-radius: 40px !important;
+        overflow: hidden !important;
+        display: block !important;
+    }
+    /* Parent div: clip + inset ring to cover any anti-aliased edge */
+    div:has(> iframe[data-testid="stCustomComponentV1"]) {
+        position: relative !important;
+        border-radius: 40px !important;
+        overflow: hidden !important;
+    }
+    div:has(> iframe[data-testid="stCustomComponentV1"])::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 40px;
+        box-shadow: inset 0 0 0 4px #d1d5db;
+        pointer-events: none;
+        z-index: 9999;
+    }
+
     @keyframes shrinkIn {
         from { opacity: 0; transform: scale(1.5); transform-origin: top right; }
         to   { opacity: 1; transform: scale(1);   transform-origin: top right; }
@@ -174,21 +198,95 @@ st.markdown("""
     .shrink-in { animation: shrinkIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both; }
 
     /* Button override */
+    [data-testid="stButton"] { width: fit-content; }
+    [data-testid="stColumn"] { padding-left: 0 !important; padding-right: 0 !important; }
+    [data-testid="stSpinner"] p { white-space: nowrap; color: #ffffff; }
+    [data-testid="stSearchbox"],
+    [data-testid="stSearchbox"] > div,
+    [data-testid="stSearchbox"] > div > div,
+    [data-testid="stSearchbox"] iframe,
+    [data-testid="stColumn"],
+    .css-b62m3t-container { background: transparent !important; }
+
+    /* Default / secondary buttons — ghost white outline (works on dark backgrounds) */
     .stButton > button {
-        background-color: #0066CC;
-        color: white;
-        border: none;
+        background-color: transparent;
+        color: #ffffff;
+        border: 1.5px solid rgba(255,255,255,0.5);
         border-radius: 6px;
         padding: 10px 28px;
-        font-weight: 600;
+        font-weight: 700;
         font-size: 1rem;
-        width: 100%;
+        width: auto;
+        white-space: nowrap;
     }
     .stButton > button:hover {
-        background-color: #0052a3;
-        color: white;
+        background-color: rgba(255,255,255,0.1);
+        border-color: #ffffff;
+        color: #ffffff;
     }
+    /* Primary buttons — orange fill, white text */
+    [data-testid="stBaseButton-primary"] {
+        background-color: #ff704c !important;
+        border: 2px solid #ff704c !important;
+        color: #ffffff !important;
+        font-weight: 900 !important;
+    }
+    [data-testid="stBaseButton-primary"] p {
+        font-weight: 900 !important;
+        color: #ffffff !important;
+    }
+    [data-testid="stBaseButton-primary"]:hover {
+        background-color: #e55a38 !important;
+        border-color: #e55a38 !important;
+        color: #ffffff !important;
+    }
+
+    /* O&P number input — card style matching linear footage bar */
+    [data-testid="stNumberInput"] {
+        background: #ffffff;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 12px 16px;
+        margin-top: 8px;
+    }
+    [data-testid="stNumberInput"] label p {
+        font-size: 0.72rem !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.08em !important;
+        color: #0066CC !important;
+    }
+
+    /* Street view image — white photo frame */
+    [data-testid="stImage"] img {
+        border: 5px solid #ffffff;
+        border-radius: 6px;
+        box-shadow: 0 6px 28px rgba(0,0,0,0.28);
+        display: block;
+    }
+
+    /* Custom segment table */
+    .jn-table { width: 100%; border-collapse: collapse; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+    .jn-table thead tr { background: #1a3a6b; }
+    .jn-table thead th { padding: 12px 16px; text-align: left; color: #ffffff; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; border: none; }
+    .jn-table tbody tr:nth-child(even) { background: #f9fafb; }
+    .jn-table tbody tr:nth-child(odd)  { background: #ffffff; }
+    .jn-table tbody td { padding: 10px 16px; color: #374151; font-size: 0.9rem; border: none; border-bottom: 1px solid #f3f4f6; }
+    .jn-table tbody td.accent { font-weight: 700; color: #e63946; }
 </style>
+""", unsafe_allow_html=True)
+
+# ── Logo (fixed, all stages) ─────────────────────────────────────────────────
+st.markdown("""
+<div style="position:fixed; top:14px; left:20px; z-index:1000;
+            display:flex; align-items:center; gap:6px;
+            background:rgba(0,0,0,0.25); backdrop-filter:blur(6px);
+            border-radius:8px; padding:6px 14px;">
+    <span style="font-size:1rem; font-weight:900; color:#ffffff; letter-spacing:-0.01em;">
+        Job<span style="color:#ffbf00">Nimbus</span>
+    </span>
+</div>
 """, unsafe_allow_html=True)
 
 # ── Session state ─────────────────────────────────────────────────────────────
@@ -203,6 +301,8 @@ if "stage" not in st.session_state:
     st.session_state.jn_saved        = False
     st.session_state.jn_contact_name = ""
     st.session_state.current_total   = None
+    st.session_state.op_pct          = 20.0
+    st.session_state.edited_rates    = None
 
 
 def _fetch_street_view_b64(lat, lng, api_key):
@@ -219,14 +319,11 @@ def _fetch_street_view_b64(lat, lng, api_key):
     return None
 
 
-import base64
-
-
 # ── Google Places address autocomplete ────────────────────────────────────────
 def _search_addresses(query: str) -> list[str]:
     if not query or len(query) < 3:
         return []
-    api_key = os.getenv("GOOGLE_SOLAR_API_KEY")
+    api_key = st.secrets.get("GOOGLE_SOLAR_API_KEY") or os.getenv("GOOGLE_SOLAR_API_KEY")
     try:
         resp = requests.get(
             "https://maps.googleapis.com/maps/api/place/autocomplete/json",
@@ -262,7 +359,7 @@ def jn_save_dialog(address: str, total: float):
     st.markdown("<div style='margin-top:4px;'></div>", unsafe_allow_html=True)
     btn_col, cancel_col = st.columns([2, 1])
     with btn_col:
-        if st.button("Save to JobNimbus", type="primary", use_container_width=True):
+        if st.button("Save to JobNimbus", type="primary", width='stretch'):
             if not first.strip() or not last.strip():
                 st.error("First and last name are required.")
             else:
@@ -270,13 +367,13 @@ def jn_save_dialog(address: str, total: float):
                 st.session_state.jn_contact_name = f"{first.strip()} {last.strip()}"
                 st.rerun()
     with cancel_col:
-        if st.button("Cancel", use_container_width=True):
+        if st.button("Cancel", width='stretch'):
             st.rerun()
 
 
 # ── Stage: input — centered ───────────────────────────────────────────────────
 if st.session_state.stage == "input":
-    _, center, _ = st.columns([1, 2, 1])
+    _, center, _ = st.columns([1, 3, 1])
     with center:
         st.markdown("""
         <div class="jn-header">
@@ -292,12 +389,18 @@ if st.session_state.stage == "input":
             clear_on_submit=False,
             style_overrides={
                 "searchbox": {
-                    "control":     {"backgroundColor": "#263f6c", "borderColor": "#263f6c"},
-                    "input":       {"color": "#ffbf00"},
-                    "placeholder": {"color": "#b0b0b0"},
-                    "singleValue": {"color": "#ffbf00"},
-                    "menuList":    {"backgroundColor": "#263f6c"},
-                    "option":      {"color": "#ffffff", "backgroundColor": "#263f6c"},
+                    "container":          {"backgroundColor": "transparent"},
+                    "control":            {"backgroundColor": "#ffffff", "borderColor": "#d1d5db", "minHeight": "84px", "borderRadius": "40px", "boxShadow": "0 4px 20px rgba(0,0,0,0.18)"},
+                    "valueContainer":     {"padding": "0 28px"},
+                    "input":              {"color": "#1a3a6b", "fontSize": "1.5rem", "fontWeight": "700"},
+                    "placeholder":        {"color": "#9ca3af", "fontSize": "1.5rem"},
+                    "singleValue":        {"color": "#1a3a6b", "fontSize": "1.5rem", "fontWeight": "700"},
+                    "menu":               {"backgroundColor": "#ffffff", "borderRadius": "12px", "boxShadow": "0 8px 24px rgba(0,0,0,0.15)", "border": "1px solid #e5e7eb"},
+                    "menuList":           {"backgroundColor": "#ffffff"},
+                    "option":             {"color": "#1a3a6b", "backgroundColor": "#ffffff", "fontSize": "1.1rem"},
+                    "dropdownIndicator":  {"color": "#1a3a6b", "padding": "0 20px"},
+                    "indicatorsContainer":{"backgroundColor": "#ffffff"},
+                    "indicatorSeparator": {"display": "none"},
                 },
             },
         )
@@ -306,7 +409,7 @@ if st.session_state.stage == "input":
             with st.spinner("Looking up address..."):
                 try:
                     lat, lng = geocode(selected)
-                    api_key = os.getenv("GOOGLE_SOLAR_API_KEY")
+                    api_key = st.secrets.get("GOOGLE_SOLAR_API_KEY") or os.getenv("GOOGLE_SOLAR_API_KEY")
                     st.session_state.address    = selected
                     st.session_state.lat        = lat
                     st.session_state.lng        = lng
@@ -319,7 +422,7 @@ if st.session_state.stage == "input":
 # ── Stage: confirm — two-column ───────────────────────────────────────────────
 elif st.session_state.stage == "confirm":
     left, right = st.columns([1, 1])
-    api_key = os.getenv("GOOGLE_SOLAR_API_KEY")
+    api_key = st.secrets.get("GOOGLE_SOLAR_API_KEY") or os.getenv("GOOGLE_SOLAR_API_KEY")
 
     with left:
         st.markdown("""
@@ -345,7 +448,7 @@ elif st.session_state.stage == "confirm":
 
         yes_col, no_col = st.columns(2)
         with yes_col:
-            if st.button("Yes, run estimate"):
+            if st.button("Yes, run estimate", type="primary"):
                 with st.spinner("Pulling aerial measurements..."):
                     try:
                         measurements = measure_from_coords(
@@ -357,6 +460,7 @@ elif st.session_state.stage == "confirm":
                         st.session_state.measurements = measurements
                         st.session_state.est = est
                         st.session_state.stage = "results"
+                        st.session_state.edited_rates = None
                         st.rerun()
                     except ValueError as e:
                         st.error(f"Could not retrieve data: {e}")
@@ -369,26 +473,42 @@ elif st.session_state.stage == "confirm":
     with right:
         if st.session_state.street_b64:
             st.markdown('<div class="slide-right">', unsafe_allow_html=True)
-            st.image(io.BytesIO(base64.b64decode(st.session_state.street_b64)), use_container_width=True)
+            st.image(io.BytesIO(base64.b64decode(st.session_state.street_b64)), width='stretch')
             st.markdown('</div>', unsafe_allow_html=True)
         else:
-            b64 = _fetch_street_view_b64(st.session_state.lat, st.session_state.lng, api_key)
-            if b64:
-                st.session_state.street_b64 = b64
-                st.markdown('<div class="slide-right">', unsafe_allow_html=True)
-                st.image(io.BytesIO(base64.b64decode(b64)), use_container_width=True)
-                st.markdown('</div>', unsafe_allow_html=True)
-            else:
-                st.warning("Street view not available for this address.")
+            st.warning("Street view not available for this address.")
 
 # ── Stage: results — full width ───────────────────────────────────────────────
 elif st.session_state.stage == "results":
-    api_key      = os.getenv("GOOGLE_SOLAR_API_KEY")
+    st.markdown("""
+    <style>
+    .block-container {
+        background: rgba(255,255,255,0.94) !important;
+        border-radius: 16px !important;
+    }
+    /* On white background, secondary buttons flip to dark outline */
+    .stButton > button {
+        color: #374151 !important;
+        border-color: #d1d5db !important;
+    }
+    .stButton > button:hover {
+        background-color: #f3f4f6 !important;
+        color: #111827 !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
     measurements = st.session_state.measurements
     est          = st.session_state.est
 
-    if st.session_state.current_total is None:
-        st.session_state.current_total = est["total"]
+    if st.session_state.edited_rates is None:
+        st.session_state.edited_rates = {item["item"]: item["rate"] for item in est["line_items"]}
+
+    _pre_subtotal = sum(
+        item["qty"] * st.session_state.edited_rates.get(item["item"], item["rate"])
+        for item in est["line_items"]
+    )
+    st.session_state.current_total = round(_pre_subtotal * (1 + st.session_state.op_pct / 100), 2)
 
     # ── Property header ───────────────────────────────────────────────────────
     hdr_left, hdr_right = st.columns([2, 1])
@@ -396,31 +516,42 @@ elif st.session_state.stage == "results":
         st.markdown(f"""
         <div style="padding:4px 0 6px;">
             <div style="font-size:0.9rem; font-weight:700; text-transform:uppercase;
-                        letter-spacing:0.08em; color:rgba(255,255,255,0.7); margin-bottom:6px;">
-                Total Estimate (incl. 20% O&amp;P)
+                        letter-spacing:0.08em; color:#6b7280; margin-bottom:6px;">
+                Total Estimate (incl. {st.session_state.op_pct:.0f}% O&amp;P)
             </div>
-            <div style="font-size:1.8rem; font-weight:800; color:#ffffff; line-height:1.2; margin-bottom:8px;">
+            <div style="font-size:1.8rem; font-weight:800; color:#1a1a2e; line-height:1.2; margin-bottom:8px;">
                 {st.session_state.address}
             </div>
-            <div style="font-size:2.8rem; font-weight:800; color:#ffffff;">${st.session_state.current_total:,.2f}</div>
+            <div style="font-size:2.8rem; font-weight:800; color:#0066CC;">${st.session_state.current_total:,.2f}</div>
         </div>
         """, unsafe_allow_html=True)
 
-        if st.session_state.jn_saved:
-            name = st.session_state.get("jn_contact_name", "")
-            st.markdown(f"""
-            <div style="display:inline-flex; align-items:center; gap:8px;
-                        background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.4);
-                        border-radius:6px; padding:8px 16px; margin-top:4px;">
-                <span style="font-size:1.1rem;">✓</span>
-                <span style="color:#ffffff; font-weight:600; font-size:0.9rem;">
-                    Saved to JobNimbus{f' · {name}' if name else ''}
-                </span>
-            </div>
-            """, unsafe_allow_html=True)
-        else:
-            if st.button("Save to JobNimbus", key="jn_save"):
-                jn_save_dialog(st.session_state.address, st.session_state.current_total)
+        save_col, start_col, _ = st.columns([2, 2, 1])
+        with save_col:
+            if st.session_state.jn_saved:
+                name = st.session_state.get("jn_contact_name", "")
+                st.markdown(f"""
+                <div style="display:inline-flex; align-items:center; gap:8px; width:fit-content;
+                            background:#eff6ff; border:1px solid #93c5fd;
+                            border-radius:6px; padding:8px 16px; margin-top:4px;">
+                    <span style="font-size:1.1rem; color:#0066CC;">✓</span>
+                    <span style="color:#1a3a6b; font-weight:600; font-size:0.9rem;">
+                        Saved to JobNimbus{f' · {name}' if name else ''}
+                    </span>
+                </div>
+                """, unsafe_allow_html=True)
+            else:
+                if st.button("Save to JobNimbus", key="jn_save", type="primary"):
+                    jn_save_dialog(st.session_state.address, st.session_state.current_total)
+        with start_col:
+            if st.button("Start Over", key="start_over_top"):
+                st.session_state.stage            = "input"
+                st.session_state.jn_saved         = False
+                st.session_state.jn_contact_name  = ""
+                st.session_state.current_total    = None
+                st.session_state.edited_rates     = None
+                st.session_state.pop("address_searchbox", None)
+                st.rerun()
     with hdr_right:
         if st.session_state.street_b64:
             st.markdown('<div class="shrink-in" style="text-align: right;">', unsafe_allow_html=True)
@@ -506,36 +637,54 @@ elif st.session_state.stage == "results":
 
     # ── Segment breakdown ─────────────────────────────────────────────────────
     st.markdown('<div class="jn-section">Roof Segments</div>', unsafe_allow_html=True)
-    seg_df = pd.DataFrame([
-        {
-            "Segment":     f"Plane {i+1}",
-            "Pitch":       f"{s['pitch_rise']} ({s['pitch_degrees']:.1f}°)",
-            "Area (sqft)": f"{s['area_sqft']:,.0f}",
-            "Facing":      _azimuth_label(s['azimuth']),
-        }
+    seg_rows = "".join(
+        f"""<tr>
+            <td>Plane {i+1}</td>
+            <td>{s['pitch_rise']} ({s['pitch_degrees']:.1f}°)</td>
+            <td class="accent">{s['area_sqft']:,.0f}</td>
+            <td>{_azimuth_label(s['azimuth'])}</td>
+        </tr>"""
         for i, s in enumerate(measurements['segments'])
-    ])
-    st.dataframe(seg_df, use_container_width=True, hide_index=True)
+    )
+    st.markdown(f"""
+    <table class="jn-table">
+        <thead><tr>
+            <th>Segment</th><th>Pitch</th><th>Area (sq ft)</th><th>Facing</th>
+        </tr></thead>
+        <tbody>{seg_rows}</tbody>
+    </table>
+    """, unsafe_allow_html=True)
 
     # ── Estimate table ────────────────────────────────────────────────────────
     st.markdown('<div class="jn-section">Estimate</div>', unsafe_allow_html=True)
     st.caption("Click any Rate cell to update your price — totals recalculate automatically.")
+
+    if st.session_state.edited_rates is None:
+        st.session_state.edited_rates = {item["item"]: item["rate"] for item in est["line_items"]}
 
     est_df = pd.DataFrame([
         {
             "Line Item": item["item"],
             "Qty":       item["qty"],
             "Unit":      item["unit"],
-            "Rate ($)":  item["rate"],
-            "Subtotal":  item["subtotal"],
+            "Rate ($)":  st.session_state.edited_rates.get(item["item"], item["rate"]),
+            "Subtotal":  round(item["qty"] * st.session_state.edited_rates.get(item["item"], item["rate"]), 2),
         }
         for item in est["line_items"]
     ])
 
+    def _sync_rates():
+        for row_idx, edits in st.session_state._est_table.get("edited_rows", {}).items():
+            if "Rate ($)" in edits:
+                item_name = est["line_items"][row_idx]["item"]
+                st.session_state.edited_rates[item_name] = edits["Rate ($)"]
+
     edited_df = st.data_editor(
         est_df,
-        use_container_width=True,
+        width='stretch',
         hide_index=True,
+        key="_est_table",
+        on_change=_sync_rates,
         column_config={
             "Line Item": st.column_config.TextColumn(disabled=True),
             "Qty":       st.column_config.NumberColumn(disabled=True, format="%.2f"),
@@ -545,20 +694,28 @@ elif st.session_state.stage == "results":
         },
     )
 
+    for _, row in edited_df.iterrows():
+        st.session_state.edited_rates[row["Line Item"]] = row["Rate ($)"]
+
     edited_df["Subtotal"] = (edited_df["Qty"] * edited_df["Rate ($)"]).round(2)
     subtotal = edited_df["Subtotal"].sum()
 
+    def _sync_op_pct():
+        st.session_state.op_pct = st.session_state._op_pct_widget
+
     op_pct = st.number_input(
         "Overhead & Profit %",
-        min_value=0.0, max_value=100.0, value=20.0, step=1.0, format="%.1f",
+        min_value=0.0, max_value=100.0, value=st.session_state.op_pct, step=1.0, format="%.1f",
+        key="_op_pct_widget", on_change=_sync_op_pct,
     )
+    st.session_state.op_pct = op_pct
 
     overhead = round(subtotal * (op_pct / 100), 2)
     total    = round(subtotal + overhead, 2)
     st.session_state.current_total = total
 
     st.markdown(f"""
-    <div style="text-align:right; color:#ffffff; font-size:0.9rem; margin-top:8px; opacity:0.8;">
+    <div style="text-align:right; color:#6b7280; font-size:0.9rem; margin-top:8px;">
         Subtotal: <strong>${subtotal:,.2f}</strong> &nbsp;|&nbsp;
         Overhead & Profit ({op_pct:.0f}%): <strong>${overhead:,.2f}</strong>
     </div>
@@ -568,13 +725,5 @@ elif st.session_state.stage == "results":
     </div>
     """, unsafe_allow_html=True)
 
-    st.markdown("<div style='margin-top:24px;'></div>", unsafe_allow_html=True)
-    if st.button("Start Over"):
-        st.session_state.stage            = "input"
-        st.session_state.jn_saved         = False
-        st.session_state.jn_contact_name  = ""
-        st.session_state.current_total    = None
-        st.session_state.pop("address_searchbox", None)
-        st.rerun()
 
 
