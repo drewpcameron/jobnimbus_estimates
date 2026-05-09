@@ -14,7 +14,7 @@ def _azimuth_label(az: float) -> str:
 
 # ── Page config ───────────────────────────────────────────────────────────────
 st.set_page_config(
-    page_title="Roof Estimator — JobNimbus",
+    page_title="Aerial Roof Estimator — JobNimbus",
     page_icon="https://content.partnerpage.io/eyJidWNrZXQiOiJwYXJ0bmVycGFnZS5wcm9kIiwia2V5IjoibWVkaWEvY29udGFjdF9pbWFnZXMvOGY5NTQyN2MtMTdkYS00ZGVhLWFmNDEtOGU4MTM1NGYxYTU3L2U3ZjhmNTE5LTExYjgtNGVjNC04NjQ3LTg3YjJhMDgyZDA0MC5qcGVnIiwiZWRpdHMiOnsidG9Gb3JtYXQiOiJ3ZWJwIiwicmVzaXplIjp7ImZpdCI6ImNvbnRhaW4iLCJiYWNrZ3JvdW5kIjp7InIiOjI1NSwiZyI6MjU1LCJiIjoyNTUsImFscGhhIjowfX19fQ==",
     layout="wide",
 )
@@ -37,6 +37,18 @@ st.markdown("""
 
     /* Hide default streamlit chrome */
     #MainMenu, footer, header { visibility: hidden; }
+    [data-testid="stHeaderActionElements"] { display: none !important; }
+
+    /* Reduce top padding of main container */
+    .block-container {
+        padding-top: 2.5rem !important;
+    }
+
+    /* Align street view image to the right */
+    [data-testid="stFullScreenFrame"] {
+        display: flex;
+        justify-content: flex-end;
+    }
 
     /* Page background */
     .stApp {
@@ -247,7 +259,7 @@ if st.session_state.stage == "input":
     with center:
         st.markdown("""
         <div class="jn-header">
-            <h1>Roof Estimator</h1>
+            <h1>Aerial Roof Estimator</h1>
             <p>Powered by Google Solar API — aerial measurements in seconds</p>
         </div>
         """, unsafe_allow_html=True)
@@ -281,7 +293,7 @@ elif st.session_state.stage == "confirm":
     with left:
         st.markdown("""
         <div class="jn-header slide-left">
-            <h1>Roof Estimator</h1>
+            <h1>Aerial Roof Estimator</h1>
             <p>Powered by Google Solar API — aerial measurements in seconds</p>
         </div>
         """, unsafe_allow_html=True)
@@ -350,16 +362,12 @@ elif st.session_state.stage == "results":
         <div style="padding:4px 0 6px;">
             <div style="font-size:0.9rem; font-weight:700; text-transform:uppercase;
                         letter-spacing:0.08em; color:rgba(255,255,255,0.7); margin-bottom:6px;">
-                Roofing Estimate
+                Total Estimate (incl. 20% O&amp;P)
             </div>
             <div style="font-size:1.8rem; font-weight:800; color:#ffffff; line-height:1.2; margin-bottom:8px;">
                 {st.session_state.address}
             </div>
             <div style="font-size:2.8rem; font-weight:800; color:#ffffff;">${est['total']:,.2f}</div>
-            <div style="font-size:0.9rem; font-weight:600; text-transform:uppercase;
-                        letter-spacing:0.06em; color:rgba(255,255,255,0.6); margin-top:2px;">
-                Total Estimate (incl. 20% O&amp;P)
-            </div>
         </div>
         """, unsafe_allow_html=True)
 
@@ -380,7 +388,7 @@ elif st.session_state.stage == "results":
                 jn_save_dialog(st.session_state.address, est["total"])
     with hdr_right:
         if st.session_state.street_b64:
-            st.markdown('<div class="shrink-in">', unsafe_allow_html=True)
+            st.markdown('<div class="shrink-in" style="text-align: right;">', unsafe_allow_html=True)
             st.image(
                 io.BytesIO(base64.b64decode(st.session_state.street_b64)),
                 width=350,
