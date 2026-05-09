@@ -79,20 +79,6 @@ The Saturday demo will walk through the full contractor workflow:
 
 ---
 
-## Running Locally
-
-```bash
-pip install -r requirements.txt
-streamlit run app.py
-```
-
-Set your API key in `.streamlit/secrets.toml`:
-```toml
-GOOGLE_SOLAR_API_KEY = "your_key_here"
-```
-
----
-
 ## Test Property Results
 
 | Address | Sq Ft |
