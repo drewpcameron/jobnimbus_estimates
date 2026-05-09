@@ -6,8 +6,8 @@
 ## Status
 - [x] Google Solar API working for all 5 test addresses
 - [x] pitchDegrees and areaMeters2 confirmed on all segments
-- [ ] Measurement engine
-- [ ] Estimation logic
+- [x] Measurement engine
+- [x] Estimation logic
 - [ ] UI / demo
 - [ ] Submission
 
