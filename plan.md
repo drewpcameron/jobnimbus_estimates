@@ -121,6 +121,14 @@ Record the total sqft for each — these go directly into the submission form.
 
 ---
 
+## Before Demo — Morning TODO
+- [ ] Update color of section headers (e.g. "Roof Measurements") to match brand
+- [ ] Fix top padding on results page so estimate fits on screen without scrolling
+- [ ] Weigh other button options for the header (Copy Summary, Email to Client, etc.)
+- [ ] Fix remaining styling quirks (spacing, alignment, font sizes)
+
+---
+
 ## Nice to Haves
 - **Address autocomplete** — Enable Google Places Autocomplete API (same key), implement via `st.components.v1.html()` with the Places JS SDK. Suggestions appear as user types; selected address is passed back to `st.session_state` via postMessage. ~20–30 min.
 - **Full confirmation animation (zoom + flatten + scan)** — After house confirmation, street view zooms in (`transform: scale()`), crossfades to Google Maps Static satellite image, satellite tilts from `perspective rotateX(45deg)` down to flat, then a scan line sweeps top-to-bottom. All CSS keyframes in a `st.components.v1.html()` block with both images base64-encoded. Requires a `time.sleep(3)` after the Solar API call so the animation plays fully before results render. ~2–3 hours.
