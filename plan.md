@@ -123,6 +123,8 @@ Record the total sqft for each — these go directly into the submission form.
 
 ## Nice to Haves
 - **Address autocomplete** — Enable Google Places Autocomplete API (same key), implement via `st.components.v1.html()` with the Places JS SDK. Suggestions appear as user types; selected address is passed back to `st.session_state` via postMessage. ~20–30 min.
+- **Full confirmation animation (zoom + flatten + scan)** — After house confirmation, street view zooms in (`transform: scale()`), crossfades to Google Maps Static satellite image, satellite tilts from `perspective rotateX(45deg)` down to flat, then a scan line sweeps top-to-bottom. All CSS keyframes in a `st.components.v1.html()` block with both images base64-encoded. Requires a `time.sleep(3)` after the Solar API call so the animation plays fully before results render. ~2–3 hours.
+- **Satellite segment overlay with hover costs** — Overlay roof segment outlines on the satellite image with per-segment cost breakdown on hover. Requires Solar API `dataLayers:get` endpoint (GeoTIFF rasters) to extract polygon boundaries, `rasterio`/`shapely` for coordinate projection, and a custom `st.components.v1.html()` canvas component for hover interaction. Strong demo/wow feature but limited daily contractor utility. ~6–8 hours, high implementation risk.
 
 ---
 
