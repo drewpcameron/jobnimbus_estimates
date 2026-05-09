@@ -198,6 +198,22 @@ eave_lf = sqrt(footprint_sqft) * 4
 
 ---
 
+## AI Approach
+
+This project deliberately does not use a language model or vision model for measurement. Here's why.
+
+The obvious approach — prompt a vision model with a satellite image and ask it to estimate roof area — introduces two problems that are hard to fix in a production tool: hallucination risk (the model can confidently return a wrong number with no way to audit it) and non-determinism (the same image can produce different measurements on different runs).
+
+The Google Solar API solves both problems. It was built by Google specifically to extract roof geometry from LiDAR and aerial imagery at scale — it has processed over 320 million rooftops. It returns structured, deterministic data: exact segment areas, pitch angles, and orientations as discrete numeric values. There is nothing to interpret or hallucinate.
+
+The "AI" in this project is the measurement source itself. The Solar API's underlying pipeline uses computer vision and photogrammetry at a level of engineering that no prompt-engineered vision model call would match, and it exposes the results as clean geometry rather than a natural language estimate.
+
+Everything built on top — the waste factors, pitch multipliers, linear footage model, line-item estimator — is deterministic Python. The output is fully auditable: you can trace every number in the estimate back to a specific formula and a specific value returned by the API.
+
+**Why not add an LLM on top?** We considered using an LLM to interpret edge cases or generate a narrative summary, but the contractor use case doesn't benefit from it — a roofer needs a number they can defend, not a paragraph. Adding a model would introduce latency, cost, and a failure mode with no upside.
+
+---
+
 ## Known Limitations
 
 - **Coverage is US-only** — the Google Solar API does not have data outside the United States
