@@ -4,6 +4,7 @@ import os
 import requests
 import streamlit as st
 import pandas as pd
+from streamlit_searchbox import st_searchbox
 from measurement_engine import geocode, measure_from_coords
 from estimator import build_estimate
 
@@ -201,6 +202,7 @@ if "stage" not in st.session_state:
     st.session_state.est           = None
     st.session_state.jn_saved        = False
     st.session_state.jn_contact_name = ""
+    st.session_state.current_total   = None
 
 
 def _fetch_street_view_b64(lat, lng, api_key):
@@ -218,6 +220,25 @@ def _fetch_street_view_b64(lat, lng, api_key):
 
 
 import base64
+
+
+# ── Google Places address autocomplete ────────────────────────────────────────
+def _search_addresses(query: str) -> list[str]:
+    if not query or len(query) < 3:
+        return []
+    api_key = os.getenv("GOOGLE_SOLAR_API_KEY")
+    try:
+        resp = requests.get(
+            "https://maps.googleapis.com/maps/api/place/autocomplete/json",
+            params={"input": query, "types": "address", "key": api_key},
+            timeout=5,
+        )
+        data = resp.json()
+        if data.get("status") == "OK":
+            return [p["description"] for p in data["predictions"]]
+    except Exception:
+        pass
+    return []
 
 
 # ── JobNimbus save modal ───────────────────────────────────────────────────────
@@ -263,27 +284,37 @@ if st.session_state.stage == "input":
             <p>Powered by Google Solar API — aerial measurements in seconds</p>
         </div>
         """, unsafe_allow_html=True)
-        address = st.text_input(
-            "Property Address",
+
+        selected = st_searchbox(
+            _search_addresses,
             placeholder="123 Main St, Houston, TX 77001",
-            label_visibility="collapsed",
+            key="address_searchbox",
+            clear_on_submit=False,
+            style_overrides={
+                "searchbox": {
+                    "control":     {"backgroundColor": "#263f6c", "borderColor": "#263f6c"},
+                    "input":       {"color": "#ffbf00"},
+                    "placeholder": {"color": "#b0b0b0"},
+                    "singleValue": {"color": "#ffbf00"},
+                    "menuList":    {"backgroundColor": "#263f6c"},
+                    "option":      {"color": "#ffffff", "backgroundColor": "#263f6c"},
+                },
+            },
         )
-        if st.button("Get Estimate"):
-            if address.strip():
-                with st.spinner("Looking up address..."):
-                    try:
-                        lat, lng = geocode(address.strip())
-                        api_key = os.getenv("GOOGLE_SOLAR_API_KEY")
-                        st.session_state.address    = address.strip()
-                        st.session_state.lat        = lat
-                        st.session_state.lng        = lng
-                        st.session_state.street_b64 = _fetch_street_view_b64(lat, lng, api_key)
-                        st.session_state.stage      = "confirm"
-                        st.rerun()
-                    except ValueError as e:
-                        st.error(f"Could not find address: {e}")
-            else:
-                st.warning("Please enter a property address.")
+
+        if selected:
+            with st.spinner("Looking up address..."):
+                try:
+                    lat, lng = geocode(selected)
+                    api_key = os.getenv("GOOGLE_SOLAR_API_KEY")
+                    st.session_state.address    = selected
+                    st.session_state.lat        = lat
+                    st.session_state.lng        = lng
+                    st.session_state.street_b64 = _fetch_street_view_b64(lat, lng, api_key)
+                    st.session_state.stage      = "confirm"
+                    st.rerun()
+                except ValueError as e:
+                    st.error(f"Could not find address: {e}")
 
 # ── Stage: confirm — two-column ───────────────────────────────────────────────
 elif st.session_state.stage == "confirm":
@@ -332,6 +363,7 @@ elif st.session_state.stage == "confirm":
         with no_col:
             if st.button("No, re-enter"):
                 st.session_state.stage = "input"
+                st.session_state.pop("address_searchbox", None)
                 st.rerun()
 
     with right:
@@ -355,6 +387,9 @@ elif st.session_state.stage == "results":
     measurements = st.session_state.measurements
     est          = st.session_state.est
 
+    if st.session_state.current_total is None:
+        st.session_state.current_total = est["total"]
+
     # ── Property header ───────────────────────────────────────────────────────
     hdr_left, hdr_right = st.columns([2, 1])
     with hdr_left:
@@ -367,7 +402,7 @@ elif st.session_state.stage == "results":
             <div style="font-size:1.8rem; font-weight:800; color:#ffffff; line-height:1.2; margin-bottom:8px;">
                 {st.session_state.address}
             </div>
-            <div style="font-size:2.8rem; font-weight:800; color:#ffffff;">${est['total']:,.2f}</div>
+            <div style="font-size:2.8rem; font-weight:800; color:#ffffff;">${st.session_state.current_total:,.2f}</div>
         </div>
         """, unsafe_allow_html=True)
 
@@ -385,7 +420,7 @@ elif st.session_state.stage == "results":
             """, unsafe_allow_html=True)
         else:
             if st.button("Save to JobNimbus", key="jn_save"):
-                jn_save_dialog(st.session_state.address, est["total"])
+                jn_save_dialog(st.session_state.address, st.session_state.current_total)
     with hdr_right:
         if st.session_state.street_b64:
             st.markdown('<div class="shrink-in" style="text-align: right;">', unsafe_allow_html=True)
@@ -520,6 +555,7 @@ elif st.session_state.stage == "results":
 
     overhead = round(subtotal * (op_pct / 100), 2)
     total    = round(subtotal + overhead, 2)
+    st.session_state.current_total = total
 
     st.markdown(f"""
     <div style="text-align:right; color:#ffffff; font-size:0.9rem; margin-top:8px; opacity:0.8;">
@@ -537,6 +573,8 @@ elif st.session_state.stage == "results":
         st.session_state.stage            = "input"
         st.session_state.jn_saved         = False
         st.session_state.jn_contact_name  = ""
+        st.session_state.current_total    = None
+        st.session_state.pop("address_searchbox", None)
         st.rerun()
 
 
