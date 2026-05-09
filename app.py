@@ -150,6 +150,13 @@ st.markdown("""
     .stTextInput label {
         color: #ffffff !important;
     }
+    [data-testid="stDialog"] .stTextInput label {
+        color: #000000 !important;
+    }
+    [data-testid="stDialog"] .stTextInput input {
+        color: #000000 !important;
+        -webkit-text-fill-color: #000000 !important;
+    }
 
     /* Slide-in animations */
     @keyframes slideFromCenter {
@@ -201,6 +208,8 @@ st.markdown("""
     [data-testid="stButton"] { width: fit-content; }
     [data-testid="stColumn"] { padding-left: 0 !important; padding-right: 0 !important; }
     [data-testid="stSpinner"] p { white-space: nowrap; color: #ffffff; }
+    [data-testid="stSpinner"] svg,
+    .stCacheSpinner svg { display: none !important; }
     [data-testid="stSearchbox"],
     [data-testid="stSearchbox"] > div,
     [data-testid="stSearchbox"] > div > div,
@@ -242,20 +251,39 @@ st.markdown("""
         color: #ffffff !important;
     }
 
-    /* O&P number input — card style matching linear footage bar */
+    /* O&P number input — matches estimate table styling */
     [data-testid="stNumberInput"] {
-        background: #ffffff;
-        border: 1px solid #e0e0e0;
-        border-radius: 8px;
-        padding: 12px 16px;
-        margin-top: 8px;
+        background: transparent;
+        border: none;
+        border-radius: 0;
+        padding: 0;
+        margin-top: 4px;
     }
     [data-testid="stNumberInput"] label p {
         font-size: 0.72rem !important;
         font-weight: 700 !important;
         text-transform: uppercase !important;
         letter-spacing: 0.08em !important;
-        color: #0066CC !important;
+        color: #6b7280 !important;
+    }
+    [data-testid="stNumberInput"] input {
+        background: #ffffff !important;
+        border: 1px solid #e5e7eb !important;
+        border-radius: 4px !important;
+        color: #374151 !important;
+    }
+    [data-testid="stNumberInputStepDown"],
+    [data-testid="stNumberInputStepUp"] {
+        background: #ffffff !important;
+        border: 1px solid #e5e7eb !important;
+        color: #000000 !important;
+        border-radius: 4px !important;
+    }
+    [data-testid="stNumberInputStepDown"]:hover,
+    [data-testid="stNumberInputStepUp"]:hover {
+        background: #f3f4f6 !important;
+        border-color: #000000 !important;
+        color: #000000 !important;
     }
 
     /* Street view image — white photo frame */
@@ -357,7 +385,7 @@ def jn_save_dialog(address: str, total: float):
     st.markdown("<div style='margin-top:4px;'></div>", unsafe_allow_html=True)
     btn_col, cancel_col = st.columns([2, 1])
     with btn_col:
-        if st.button("Save to JobNimbus", type="primary", width='stretch'):
+        if st.button("Confirm & Save", type="primary", width='stretch'):
             if not first.strip() or not last.strip():
                 st.error("First and last name are required.")
             else:
@@ -376,7 +404,7 @@ if st.session_state.stage == "input":
         st.markdown("""
         <div class="jn-header">
             <h1>Aerial Roof Estimator</h1>
-            <p>Powered by Google Solar API — aerial measurements in seconds</p>
+            <p>Powered by Google Solar API</p>
         </div>
         """, unsafe_allow_html=True)
 
@@ -426,7 +454,7 @@ elif st.session_state.stage == "confirm":
         st.markdown("""
         <div class="jn-header slide-left">
             <h1>Aerial Roof Estimator</h1>
-            <p>Powered by Google Solar API — aerial measurements in seconds</p>
+            <p>Powered by Google Solar API</p>
         </div>
         """, unsafe_allow_html=True)
         st.markdown(f"""

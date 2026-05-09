@@ -1,0 +1,8 @@
+Test Properties Summary
+=======================
+
+3561 E 102nd Ct, Thornton, CO 80229       — Total Area: 2,081 sq ft
+1612 S Canton Ave, Springfield, MO 65802  — Total Area: 2,757 sq ft
+6310 Laguna Bay Court, Houston, TX 77041  — Total Area: 4,186 sq ft
+3820 E Rosebrier St, Springfield, MO 65809 — Total Area: 5,566 sq ft
+1261 20th Street, Newport News, VA 23607  — Total Area: 6,118 sq ft
