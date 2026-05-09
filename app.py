@@ -99,7 +99,7 @@ st.markdown("""
     .jn-card .value {
         font-size: 1.8rem;
         font-weight: 800;
-        color: #e63946;
+        color: #1a3a6b;
     }
     .jn-card .sub {
         font-size: 0.8rem;
@@ -273,19 +273,17 @@ st.markdown("""
     .jn-table tbody tr:nth-child(even) { background: #f9fafb; }
     .jn-table tbody tr:nth-child(odd)  { background: #ffffff; }
     .jn-table tbody td { padding: 10px 16px; color: #374151; font-size: 0.9rem; border: none; border-bottom: 1px solid #f3f4f6; }
-    .jn-table tbody td.accent { font-weight: 700; color: #e63946; }
+    .jn-table tbody td.accent { font-weight: 700; color: #1a3a6b; }
 </style>
 """, unsafe_allow_html=True)
 
 # ── Logo (fixed, all stages) ─────────────────────────────────────────────────
 st.markdown("""
 <div style="position:fixed; top:14px; left:20px; z-index:1000;
-            display:flex; align-items:center; gap:6px;
-            background:rgba(0,0,0,0.25); backdrop-filter:blur(6px);
-            border-radius:8px; padding:6px 14px;">
-    <span style="font-size:1rem; font-weight:900; color:#ffffff; letter-spacing:-0.01em;">
-        Job<span style="color:#ffbf00">Nimbus</span>
-    </span>
+            background:rgba(255,255,255,0.85); backdrop-filter:blur(8px);
+            -webkit-backdrop-filter:blur(8px);
+            border-radius:10px; padding:6px 12px;">
+    <img src="app/static/logo.png" height="36" style="display:block;">
 </div>
 """, unsafe_allow_html=True)
 
@@ -485,13 +483,18 @@ elif st.session_state.stage == "results":
     .block-container {
         background: rgba(255,255,255,0.94) !important;
         border-radius: 16px !important;
+        margin: 1.5rem 2rem !important;
+        padding-left: 2rem !important;
+        padding-right: 2rem !important;
+        padding-bottom: 2rem !important;
+        max-width: calc(100% - 4rem) !important;
     }
-    /* On white background, secondary buttons flip to dark outline */
-    .stButton > button {
+    /* On white background, secondary buttons flip to dark outline — exclude primary */
+    .stButton > button:not([data-testid="stBaseButton-primary"]) {
         color: #374151 !important;
         border-color: #d1d5db !important;
     }
-    .stButton > button:hover {
+    .stButton > button:not([data-testid="stBaseButton-primary"]):hover {
         background-color: #f3f4f6 !important;
         color: #111827 !important;
     }
